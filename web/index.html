@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Big Data</title>
+    <base href="/">
+    <meta charset="UTF-8">
+
+    <meta name="google-signin-client_id"
+          content="AIzaSyD2QZpJ2aPNeLdkrf5TbOZ9WC1YDOf4iqE.apps.googleusercontent.com">
+
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" href="/stylesheets/css/main.css">
+
+    <!--Glyphicons-->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.12/js/all.js" integrity="sha384-Voup2lBiiyZYkRto2XWqbzxHXwzcm4A5RfdfG6466bu5LqjwwrjXCMBQBLMWh7qR" crossorigin="anonymous"></script>
+
+    <!--jQuery-->
+    <script src="/js_srcs/jquery.min.js"></script>
+
+    <!--Bootstrap-->
+    <script src="/js_srcs/tether.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css"
+          integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
+            integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+            crossorigin="anonymous"></script>
+
+
+
+    <!--General JavaScript resources-->
+    <script src="/js_srcs/angular.min.js"></script>
+    <script src="/js_srcs/angular-route.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+
+    <!--Angular resources-->
+    <script src="/js_codes/BDApp.js"></script>
+    <!--Controllers-->
+    <script src="/js_codes/controllers/home.js"></script>
+    <script src="/js_codes/controllers/nav.js"></script>
+
+    <!--Services-->
+    <script src="/js_codes/services/profileService.js"></script>
+    <script src="/js_codes/services/authService.js"></script>
+
+    <!--Filters-->
+    <script src="/js_codes/filters/reverse.js"></script>
+
+    <!--Directives-->
+    <script src="/js_codes/directives/upload.js"></script>
+
+
+</head>
+<body ng-app="BDApp">
+
+<div ng-include="'/pages/components/nav.html'" ng-controller="navController"></div>
+
+<div ng-view></div>
+
+</body>
+</html>

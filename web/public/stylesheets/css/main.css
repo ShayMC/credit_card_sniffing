@@ -1,0 +1,148 @@
+.home-page {
+  background: rgba(202, 255, 215, 0.22);
+  color: gray;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: 0px -70px;
+}
+.home-page .welcome-section {
+  height: auto;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  color: #e8bebe;
+  height: 540px;
+}
+.home-page .welcome-section .welcome-big {
+  margin: auto;
+  width: auto;
+  font-size: 220%;
+  font-weight: 700;
+  padding-left: 5%;
+  padding-right: 5%;
+  background-color: rgba(0, 209, 0, 0.33);
+  border-radius: 10px;
+}
+.home-page .welcome-section .institutes {
+  font-size: 150%;
+  font-weight: 500;
+  margin-left: 50%;
+}
+.home-page .welcome-section .borders.up-borders {
+  position: absolute;
+  border-top: 3px solid gray;
+  border-right: 3px solid gray;
+  width: 5%;
+  margin-left: 82%;
+  height: 25%;
+}
+.home-page .welcome-section .borders.down-borders {
+  border-bottom: 3px solid gray;
+  border-left: 3px solid gray;
+  margin-top: 4%;
+  width: 5%;
+  margin-left: 8%;
+  height: 45px;
+}
+.home-page .welcome-section .search-something .search-input-group {
+  margin-top: 5%;
+}
+/*
+ * CSS3 / LESS loader spinner
+*/
+/* Animation */
+.spin {
+  -webkit-animation: spin 750ms infinite linear;
+  -moz-animation: spin 750ms infinite linear;
+  animation: spin 750ms infinite linear;
+}
+@-webkit-keyframes spin {
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spin {
+  to {
+    -moz-transform: rotate(360deg);
+  }
+}
+/* Styling */
+.loader {
+  background-color: #eee;
+  border-radius: 100%;
+  position: relative;
+  height: 75px;
+  width: 75px;
+  overflow: hidden;
+}
+.loader .a {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -35% 0 0 -35%;
+  width: 70%;
+  height: 70%;
+  background-color: #fff;
+  border-radius: 100%;
+  z-index: 3;
+}
+.loader .b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.loader .b .c {
+  position: absolute;
+  top: 1%;
+  left: 50%;
+  margin: 0 0 0 -7.5px;
+  height: 14px;
+  width: 15px;
+  background: #378687;
+}
+body {
+  background: rgba(255, 222, 143, 0.44);
+}
+.wizer-nav {
+  background-color: #009dff !important;
+}
+.wizer-nav .wizer-logo {
+  color: white !important;
+  margin-right: 3%;
+}
+.modal .modal-dialog.modal-width {
+  max-width: 55%;
+}
+.modal .modal-dialog .modal-content .modal-container {
+  width: 100%;
+  text-align: center;
+}
+.modal .modal-dialog .modal-content .modal-container .text {
+  text-align: left;
+}
+.modal .modal-dialog .modal-content .modal-container .google-btn {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px;
+  background: #ff5353;
+  display: block;
+  width: fit-content;
+  border-radius: 6%;
+  margin: 10px auto;
+  cursor: pointer;
+}
+.modal .modal-dialog .modal-content .modal-container .facebook-btn {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px;
+  background: #3018ff;
+  display: block;
+  width: fit-content;
+  border-radius: 6%;
+  margin: 10px auto;
+  cursor: pointer;
+}
