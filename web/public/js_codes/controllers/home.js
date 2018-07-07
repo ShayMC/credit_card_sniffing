@@ -15,7 +15,7 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', functio
             }, function(err) {
                 $scope.loading = false;
 
-            })
+            });
 
         console.log("K");
 
@@ -23,6 +23,7 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', functio
 
 
 
+    $scope.search();
 
 
 }]);
