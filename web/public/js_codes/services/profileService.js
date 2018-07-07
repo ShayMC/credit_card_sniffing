@@ -11,5 +11,7 @@ BDApp.service('ProfileService', function ($http) {
             });
     };
 
+    this.search();
+
 
 });
