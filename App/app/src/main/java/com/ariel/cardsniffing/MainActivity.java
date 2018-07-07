@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        Log.i("EMVemulator", "Tag detected");
         new CardReader().execute(tag);
     }
 
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
             try {
                 tagcomm.connect();
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error tagcomm: " + e.getMessage());
                 error = "Reading card data ... Error tagcomm: " + e.getMessage();
                 return null;
             }
@@ -108,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 readCard();
                 tagcomm.close();
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error tranceive: " + e.getMessage());
                 error = "Reading card data ... Error tranceive: " + e.getMessage();
                 return null;
             }
@@ -163,26 +160,27 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-                if (cardtype == "Visa" || cardtype == "Visa Electron") {
+                else if (cardtype == "Visa" || cardtype == "Visa Electron") {
                     cardnumber = "Card number: " + Byte2Hex(recv).substring(12, 36).replaceAll(" ", "");
                     cardexpiration = "Card expiration: " + Byte2Hex(recv).substring(40, 43).replaceAll(" ", "") + "/" + Byte2Hex(recv).substring(37, 40).replaceAll(" ", "");
                 }
 
-//                if (cardtype == "American Express") {
+                else if (cardtype == "American Express") {
+                    cardnumber = "";
+                    cardexpiration = "";
+
 //                    String card ="";
 //                    for(int i=0; i<recv.length;i++){
 //                        card += " "+recv[i];
 //                    }
 //                    String finHex = Byte2Hex(recv);
 //                    String finString = new String(Arrays.copyOfRange(recv, 0, recv.length-1));
-//                }
+                }
 
-                Log.i("EMVemulator", "Done!");
                 myOutWriter.close();
                 fOut.close();
 
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error readCard: " + e.getMessage());
                 error = "Reading card data ... Error readCard: " + e.getMessage();
             }
         }
@@ -197,9 +195,7 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < hexbytes.length; i++) {
                 bytes[i] = (byte) Integer.parseInt(hexbytes[i], 16);
             }
-            Log.i("EMVemulator", "Send: " + Byte2Hex(bytes));
             byte[] recv = tagcomm.transceive(bytes);
-            Log.i("EMVemulator", "Received: " + Byte2Hex(recv));
             return recv;
         }
 
