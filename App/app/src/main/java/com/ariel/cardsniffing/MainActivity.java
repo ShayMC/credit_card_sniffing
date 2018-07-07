@@ -1,13 +1,17 @@
 package com.ariel.cardsniffing;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.NfcA;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -129,6 +133,24 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this,History.class);
         startActivity(intent);
     }
+
+    private void newCardProcess(Card card) {
+        mSubscriptions.add(RetrofitRequests.getRetrofit().newCard(card)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse, i -> mServerResponse.handleErrorDown(i)));
+    }
+
+    private void handleResponse(Response response) {
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSubscriptions.unsubscribe();
+    }
+
 
     /*!
         Inner class that allows to preform card reading in background
@@ -296,8 +318,20 @@ public class MainActivity extends AppCompatActivity {
             cardType.setText(cardtype);
             cardNumber.setText(cardnumber);
             cardExpiration.setText(cardexpiration);
+            notifyUser();
             tryAddCard();
 
+        }
+
+        private void notifyUser() {
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            // Vibrate for 500 milliseconds
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && v!=null) {
+                v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+            }else if(v!=null){
+                //deprecated in API 26
+                v.vibrate(500);
+            }
         }
 
         private void tryAddCard() {
@@ -311,15 +345,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        private void newCardProcess(Card card) {
-            mSubscriptions.add(RetrofitRequests.getRetrofit().newCard(card)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(this::handleResponse, i -> mServerResponse.handleErrorDown(i)));
-        }
-
-        private void handleResponse(Response response) {
-        }
     }
 
 }

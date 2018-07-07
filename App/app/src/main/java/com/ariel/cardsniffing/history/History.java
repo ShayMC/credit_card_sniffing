@@ -12,8 +12,10 @@ import android.widget.TextView;
 
 import com.ariel.cardsniffing.R;
 import com.ariel.cardsniffing.model.Card;
+import com.ariel.cardsniffing.model.Response;
 import com.ariel.cardsniffing.network.RetrofitRequests;
 import com.ariel.cardsniffing.network.ServerResponse;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,8 @@ public class History extends AppCompatActivity {
     private ListView cardsList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private CardsAdapter mAdapter;
+    private ShimmerFrameLayout mShimmerViewContainer;
+
 
 
 
@@ -39,7 +43,7 @@ public class History extends AppCompatActivity {
         setContentView(R.layout.activity_history);
         mSubscriptions = new CompositeSubscription();
         mServerResponse = new ServerResponse(findViewById(R.id.tool_bar));
-
+        initViews();
         mSwipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
             pullCards();
             mSwipeRefreshLayout.setRefreshing(false);
@@ -47,6 +51,8 @@ public class History extends AppCompatActivity {
     }
 
     private void initViews() {
+        mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
+        mShimmerViewContainer.startShimmerAnimation();
         cardsList = (ListView) findViewById(R.id.cards);
         ImageButton buttonBack = (ImageButton) findViewById(R.id.image_Button_back);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
@@ -61,12 +67,28 @@ public class History extends AppCompatActivity {
     }
 
 
-    private void handleResponse(Card cards[]) {
-        ArrayList<Card> saveCards = new ArrayList<>(Arrays.asList(cards));
+    private void handleResponse(Response response) {
+        ArrayList<Card> saveCards = new ArrayList<>(Arrays.asList(response.getAns()));
         Collections.reverse(saveCards);
         mAdapter = new CardsAdapter(this, new ArrayList<>(saveCards));
         cardsList.setAdapter(mAdapter);
+        mShimmerViewContainer.stopShimmerAnimation();
+        mShimmerViewContainer.setVisibility(View.GONE);
+
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSubscriptions.unsubscribe();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        pullCards();
+    }
+
 
 
 }

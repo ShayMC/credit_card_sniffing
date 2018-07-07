@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#ebe5e5</color>
     <color name="colorAccent">#3e4a5b</color>
     <color name="white">#ffffff</color>
+    <color name="background">#dddddd</color>
+    <dimen name="box_space">2.0dip</dimen>
 
 
 </resources>

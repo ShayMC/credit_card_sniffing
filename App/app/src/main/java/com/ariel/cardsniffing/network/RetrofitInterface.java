@@ -16,7 +16,7 @@ public interface RetrofitInterface {
     Observable<Response> newCard(@Body Card card);
 
     @GET("cards/get-cards")
-    Observable<Card[]> getCards();
+    Observable<Response> getCards();
 
 
 }

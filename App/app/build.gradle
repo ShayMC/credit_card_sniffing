@@ -42,5 +42,7 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.2.0'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.androidadvance:topsnackbar:1.1.1'
+    implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
 
 }
