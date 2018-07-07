@@ -8,7 +8,7 @@ router.post("/new-card",function (req, res) {
         cardnumber: req.body.cardnumber,
         cardexpiration:req.body.cardexpiration
     });
-    card.save().then(function () {
+    newCard.save().then(function () {
         res.status(200).json({message: 'Success'});
     });
 });
