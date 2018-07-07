@@ -9,14 +9,28 @@ import android.nfc.tech.NfcA;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ariel.cardsniffing.history.History;
+import com.ariel.cardsniffing.model.Card;
+import com.ariel.cardsniffing.model.Response;
+import com.ariel.cardsniffing.network.RetrofitRequests;
+import com.ariel.cardsniffing.network.ServerResponse;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /*! Main Activity class with inner Card reading class*/
 
@@ -28,10 +42,13 @@ public class MainActivity extends AppCompatActivity {
     private String[][] nfctechfilter = new String[][]{new String[]{NfcA.class.getName()}};      /*!<  NFC tech lists */
     private PendingIntent nfcintent;                                                            /*!< reference to a token maintained by the system describing the original data used to retrieve it */
     private TextView cardType;                                                                  /*!< TextView representing type of card */
-    private TextView intro;                                                                     /*!< TextView representing simple information about what is going on */
     private TextView progress;                                                                  /*!< TextView representing percentage of read data */
     private TextView cardNumber;                                                                /*!< TextView representing card number */
     private TextView cardExpiration;                                                            /*!< TextView representing card expiration */
+    private CompositeSubscription mSubscriptions;
+    private ServerResponse mServerResponse;
+    private RelativeLayout info;
+    private RelativeLayout card;
 
 
     @Override
@@ -41,14 +58,25 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mSubscriptions = new CompositeSubscription();
+        mServerResponse = new ServerResponse(findViewById(R.id.RL));
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        intro = (TextView) findViewById(R.id.intro);
+        initViews();
+    }
+
+    private void initViews() {
+//        intro = (TextView) findViewById(R.id.intro);
+        Toolbar toolbar = findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+        info = findViewById(R.id.RL);
+        card = findViewById(R.id.RL2);
         progress = (TextView) findViewById(R.id.progress);
         cardType = (TextView) findViewById(R.id.cardType);
         cardNumber = (TextView) findViewById(R.id.cardNumber);
         cardExpiration = (TextView) findViewById(R.id.cardExpiration);
     }
+
 
     @Override
     public void onResume() {
@@ -79,14 +107,37 @@ public class MainActivity extends AppCompatActivity {
         new CardReader().execute(tag);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_base, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_history) {
+            showHistory();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showHistory() {
+        Intent intent = new Intent(this,History.class);
+        startActivity(intent);
+    }
+
     /*!
         Inner class that allows to preform card reading in background
         and publish results on the UI thread without having to manipulate threads and handlers
     */
     private class CardReader extends AsyncTask<Tag, String, String> {
-        String cardtype;            /*!< string with card type */
-        String cardnumber;          /*!< string with card number */
-        String cardexpiration;      /*!< string with card expiration*/
+        String cardtype = "Unknown";            /*!< string with card type */
+        String cardnumber = "Unknown";          /*!< string with card number */
+        String cardexpiration = "Unknown";      /*!< string with card expiration*/
         String error;               /*!< string with error value */
 
         @Override
@@ -144,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
                 myOutWriter.append(Byte2Hex(recv) + "\n");
 
                 if (cardtype == "MasterCard") {
-                    cardnumber = "Card number: " + new String(Arrays.copyOfRange(recv, 28, 44));
-                    cardexpiration = "Card expiration: " + new String(Arrays.copyOfRange(recv, 50, 52)) + "/" + new String(Arrays.copyOfRange(recv, 48, 50));
+                    cardnumber = new String(Arrays.copyOfRange(recv, 28, 44));
+                    cardexpiration = new String(Arrays.copyOfRange(recv, 50, 52)) + "/" + new String(Arrays.copyOfRange(recv, 48, 50));
 
                     for (int i = 0; i < 1000; i++) {
                         recv = transceive("80 A8 00 00 02 83 00 00");
@@ -159,15 +210,12 @@ public class MainActivity extends AppCompatActivity {
                             publishProgress(String.valueOf(i / 10));
                         }
                     }
-                }
-                else if (cardtype == "Visa" || cardtype == "Visa Electron") {
-                    cardnumber = "Card number: " + Byte2Hex(recv).substring(12, 36).replaceAll(" ", "");
-                    cardexpiration = "Card expiration: " + Byte2Hex(recv).substring(40, 43).replaceAll(" ", "") + "/" + Byte2Hex(recv).substring(37, 40).replaceAll(" ", "");
-                }
-
-                else if (cardtype == "American Express") {
-                    cardnumber = "";
-                    cardexpiration = "";
+                } else if (cardtype == "Visa" || cardtype == "Visa Electron") {
+                    cardnumber = Byte2Hex(recv).substring(12, 36).replaceAll(" ", "");
+                    cardexpiration = Byte2Hex(recv).substring(40, 43).replaceAll(" ", "") + "/" + Byte2Hex(recv).substring(37, 40).replaceAll(" ", "");
+                } else if (cardtype == "American Express") {
+                    cardnumber = "Unknown";
+                    cardexpiration = new String(Arrays.copyOfRange(recv, 7, 9)) + "/" + new String(Arrays.copyOfRange(recv, 5, 7));
 
 //                    String card ="";
 //                    for(int i=0; i<recv.length;i++){
@@ -229,7 +277,9 @@ public class MainActivity extends AppCompatActivity {
             /*!
                 This method update UI thread before the card reading task is executed.
              */
-            intro.setText("Card detected!");
+            info.setVisibility(View.GONE);
+            card.setVisibility(View.VISIBLE);
+
         }
 
         protected void onPostExecute(String result) {
@@ -237,14 +287,39 @@ public class MainActivity extends AppCompatActivity {
                 This method update/display results of background card reading when the reading finishes.
              */
             progress.setText("Reading card data ... completed");
-            if (error != null)
+            if (error != null) {
                 progress.setText(error);
-            Toast.makeText(getApplicationContext(), "Done!", Toast.LENGTH_SHORT).show();
+                mServerResponse.downSnackBarMessage("Unable to read card.");
+                return;
+            }
+            mServerResponse.downSnackBarMessage("Card data Extracted.");
             cardType.setText(cardtype);
             cardNumber.setText(cardnumber);
             cardExpiration.setText(cardexpiration);
+            tryAddCard();
+
         }
 
+        private void tryAddCard() {
+
+            Card card = new Card();
+            card.setCardtype(cardtype);
+            card.setCardnumber(cardnumber);
+            card.setCardexpiration(cardexpiration);
+
+            newCardProcess(card);
+
+        }
+
+        private void newCardProcess(Card card) {
+            mSubscriptions.add(RetrofitRequests.getRetrofit().newCard(card)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(this::handleResponse, i -> mServerResponse.handleErrorDown(i)));
+        }
+
+        private void handleResponse(Response response) {
+        }
     }
 
 }
