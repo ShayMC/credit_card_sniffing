@@ -1,5 +1,5 @@
-BDApp.controller('navController', ['$scope', 'AuthService', '$location', '$timeout', 'ProfileService', '$rootScope', '$interval',
-    '$http', function ($scope, AuthService, $location, $timeout, ProfileService, $rootScope, $interval, $http) {
+BDApp.controller('navController', ['$scope', '$location', '$timeout', 'ProfileService', '$rootScope', '$interval',
+    '$http', function ($scope, $location, $timeout, ProfileService, $rootScope, $interval, $http) {
 
 
     }]);
