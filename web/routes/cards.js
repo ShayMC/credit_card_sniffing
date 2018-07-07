@@ -6,7 +6,7 @@ router.post("/new-card",function (req, res) {
     let newCard = new Card({
         cardtype: req.body.cardtype,
         cardnumber: req.body.cardnumber,
-        cadrexpiration:req.body.cadrexpiration
+        cardexpiration:req.body.cardexpiration
     });
     card.save().then(function () {
         res.status(200).json({message: 'Success'});

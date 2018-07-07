@@ -2,6 +2,6 @@ var mongoose = require('mongoose');
 var Card = new mongoose.Schema({
     cardtype: String,
     cardnumber: String,
-    cadrexpiration:String
+    cardexpiration:String
 });
 module.exports = mongoose.model('Card', Card);
