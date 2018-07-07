@@ -13,4 +13,17 @@ router.post("/new-card",function (req, res) {
     });
 });
 
+
+router.get("/get-cards",function (req, res) {
+    Card.find({},function (err, cards) {
+        if(err){
+            console.log(err);
+            res.status(500).json(err);
+        }
+        else{
+            res.status(200).json({ans: cards});
+        }
+    })
+});
+
 module.exports = router;
