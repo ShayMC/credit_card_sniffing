@@ -1,0 +1,50 @@
+<div class="home-page">
+    <!--Home page-->
+
+
+
+
+    <div class="col-5"></div>
+    <div class="col-2">
+
+        <div class="loader" ng-show="loading">
+            <span class="a"></span>
+            <span class="b spin">
+                        <span class="c"></span>
+                    </span>
+        </div>
+
+    </div>
+
+    <div class="col-5"></div>
+
+
+    <div class="containter" ng-show="!loading">
+        <table class="table table-hover" ng-if="result.length > 0">
+            <thead>
+            <tr>
+                <th>Number</th>
+                <th>Type</th>
+                <th>Number</th>
+                <th>Expiration date</th>
+
+            </tr>
+            </thead>
+            <tbody class="ans-table-body">
+            <tr ng-repeat="res in result">
+                <td scope="row">{{$index + 1}}</td>
+                <td scope="row">{{res.cardtype}}</td>
+                <td scope="row">{{res.cardnumber}}</td>
+                <td scope="row">{{res.cardexpiration}}</td>
+
+
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+</div>
+
