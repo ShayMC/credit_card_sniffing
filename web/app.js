@@ -4,9 +4,8 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 mongoose.Promise = require("bluebird");
 
-var queries = require('./routes/queries');
-var uploads = require('./routes/uploadcsv');
-var learn = require('./routes/learn');
+var cards = require('./routes/cards');
+
 
 var app = express();
 
@@ -19,9 +18,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/queries', queries);
-app.use('/upload', uploads);
-app.use('/learn', learn);
+app.use('/cards', cards);
+
 
 
 var myLessCompiler = require("./tools/less_compiler");
@@ -45,34 +43,5 @@ app.get('/', function (req, res) {
 app.listen(3000, function () {
     console.log("listening on 3000");
 });
-
-
-//
-//hadoop
-// const fs = require('fs');
-// // var hdfs = new (require("node-webhdfs")).WebHDFSClient({ user: process.env.USER, namenode_host: "localhost", namenode_port: 50070 });
-// var WebHDFS = require('webhdfs');
-// var hdfs = WebHDFS.createClient();
-//
-// var localFilePath = "/Users/user/WebstormProjects/Big_Data_ex4/guns2.csv";
-// var remoteFilePath = "/user/bigdata/guns.csv";
-//
-// var localFileStream = fs.createReadStream(localFilePath);
-// var remoteFileStream = hdfs.createWriteStream(remoteFilePath);
-//
-// localFileStream.pipe(remoteFileStream);
-//
-// console.log("opening stream to HDFS");
-//
-// remoteFileStream.on('error', function onError(err) {
-//     // Do something with the error
-//     console.log("it failed");
-//     console.log(err);
-// });
-//
-// remoteFileStream.on('finish', function onFinish() {
-//     // Upload is done
-//     console.log("it is done!");
-// });
 
 module.exports = app;
