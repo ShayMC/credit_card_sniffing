@@ -63,7 +63,7 @@ public class History extends AppCompatActivity {
         mSubscriptions.add(RetrofitRequests.getRetrofit().getCards()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse, i -> mServerResponse.handleErrorDown(i)));
+                .subscribe(this::handleResponse, i -> mServerResponse.handleError(i)));
     }
 
 

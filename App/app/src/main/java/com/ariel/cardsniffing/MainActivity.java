@@ -1,19 +1,30 @@
 package com.ariel.cardsniffing;
 
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.nfc.tech.MifareClassic;
+import android.nfc.tech.MifareUltralight;
+import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcA;
+import android.nfc.tech.NfcB;
+import android.nfc.tech.NfcF;
+import android.nfc.tech.NfcV;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +38,7 @@ import com.ariel.cardsniffing.model.Response;
 import com.ariel.cardsniffing.network.RetrofitRequests;
 import com.ariel.cardsniffing.network.ServerResponse;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -43,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private NfcAdapter nfcAdapter;                                                              /*!< represents the local NFC adapter */
     private Tag tag;                                                                            /*!< represents an NFC tag that has been discovered */
     private IsoDep tagcomm;                                                                     /*!< provides access to ISO-DEP (ISO 14443-4) properties and I/O operations on a Tag */
-    private String[][] nfctechfilter = new String[][]{new String[]{NfcA.class.getName()}};      /*!<  NFC tech lists */
+    //    private String[][] nfctechfilter = new String[][]{new String[]{NfcA.class.getName()}};      /*!<  NFC tech lists */
     private PendingIntent nfcintent;                                                            /*!< reference to a token maintained by the system describing the original data used to retrieve it */
     private TextView cardType;                                                                  /*!< TextView representing type of card */
     private TextView progress;                                                                  /*!< TextView representing percentage of read data */
@@ -67,18 +79,18 @@ public class MainActivity extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         initViews();
+
     }
 
     private void initViews() {
-//        intro = (TextView) findViewById(R.id.intro);
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         info = findViewById(R.id.RL);
         card = findViewById(R.id.RL2);
-        progress = (TextView) findViewById(R.id.progress);
-        cardType = (TextView) findViewById(R.id.cardType);
-        cardNumber = (TextView) findViewById(R.id.cardNumber);
-        cardExpiration = (TextView) findViewById(R.id.cardExpiration);
+        progress = findViewById(R.id.progress);
+        cardType = findViewById(R.id.cardType);
+        cardNumber = findViewById(R.id.cardNumber);
+        cardExpiration = findViewById(R.id.cardExpiration);
     }
 
 
@@ -89,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onResume();
         //nfcAdapter.enableReaderMode(this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,null);
-        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);
+//        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);//filter
+        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, null);
+
     }
 
     @Override
@@ -102,15 +116,22 @@ public class MainActivity extends AppCompatActivity {
         //nfcAdapter.disableForegroundDispatch(this);
     }
 
+    @Override
     protected void onNewIntent(Intent intent) {
         /*!
             This is called when NFC tag is detected
          */
+        Log.d("onNewIntent", "New Intent!");
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         new CardReader().execute(tag);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSubscriptions.unsubscribe();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -130,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showHistory() {
-        Intent intent = new Intent(this,History.class);
+        Intent intent = new Intent(this, History.class);
         startActivity(intent);
     }
 
@@ -138,17 +159,10 @@ public class MainActivity extends AppCompatActivity {
         mSubscriptions.add(RetrofitRequests.getRetrofit().newCard(card)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse, i -> mServerResponse.handleErrorDown(i)));
+                .subscribe(this::handleResponse, i -> mServerResponse.handleError(i)));
     }
 
     private void handleResponse(Response response) {
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mSubscriptions.unsubscribe();
     }
 
 
@@ -160,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
         String cardtype = "Unknown";            /*!< string with card type */
         String cardnumber = "Unknown";          /*!< string with card number */
         String cardexpiration = "Unknown";      /*!< string with card expiration*/
-        String error;               /*!< string with error value */
+        String error;                            /*!< string with error value */
+
 
         @Override
         protected String doInBackground(Tag... params) {
@@ -171,15 +186,17 @@ public class MainActivity extends AppCompatActivity {
             tagcomm = IsoDep.get(tag);
             try {
                 tagcomm.connect();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 error = "Reading card data ... Error tagcomm: " + e.getMessage();
+                e.printStackTrace();
                 return null;
             }
             try {
                 readCard();
                 tagcomm.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 error = "Reading card data ... Error tranceive: " + e.getMessage();
+                e.printStackTrace();
                 return null;
             }
             return null;
@@ -195,6 +212,15 @@ public class MainActivity extends AppCompatActivity {
                 FileOutputStream fOut = openFileOutput("EMV.card", MODE_PRIVATE);
                 OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
                 byte[] recv = transceive("00 A4 04 00 0E 32 50 41 59 2E 53 59 53 2E 44 44 46 30 31 00");
+
+                String card = "";
+                for (int i = 0; i < recv.length; i++) {
+                    card += " " + recv[i];
+                }
+                String finHex = Byte2Hex(recv);
+                String finString = new String(Arrays.copyOfRange(recv, 0, recv.length - 1));
+
+
                 myOutWriter.append(Byte2Hex(recv) + "\n");
                 temp = "00 A4 04 00 07";
                 temp += Byte2Hex(recv).substring(80, 102);
@@ -205,10 +231,8 @@ public class MainActivity extends AppCompatActivity {
                     cardtype = "Visa Electron";
                 if (temp.matches("00 A4 04 00 07 A0 00 00 00 03 10 10 00"))
                     cardtype = "Visa";
-
                 if (temp.matches("00 A4 04 00 07 A0 00 00 00 25 01 04 00"))
                     cardtype = "American Express";
-
 
                 recv = transceive(temp);
                 myOutWriter.append(Byte2Hex(recv) + "\n");
@@ -239,12 +263,6 @@ public class MainActivity extends AppCompatActivity {
                     cardnumber = "Unknown";
                     cardexpiration = new String(Arrays.copyOfRange(recv, 7, 9)) + "/" + new String(Arrays.copyOfRange(recv, 5, 7));
 
-//                    String card ="";
-//                    for(int i=0; i<recv.length;i++){
-//                        card += " "+recv[i];
-//                    }
-//                    String finHex = Byte2Hex(recv);
-//                    String finString = new String(Arrays.copyOfRange(recv, 0, recv.length-1));
                 }
 
                 myOutWriter.close();
@@ -326,9 +344,9 @@ public class MainActivity extends AppCompatActivity {
         private void notifyUser() {
             Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             // Vibrate for 500 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && v!=null) {
-                v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
-            }else if(v!=null){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && v != null) {
+                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else if (v != null) {
                 //deprecated in API 26
                 v.vibrate(500);
             }
