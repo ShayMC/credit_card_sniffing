@@ -38,9 +38,13 @@ import com.ariel.cardsniffing.model.Response;
 import com.ariel.cardsniffing.network.RetrofitRequests;
 import com.ariel.cardsniffing.network.ServerResponse;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
 
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private NfcAdapter nfcAdapter;                                                              /*!< represents the local NFC adapter */
     private Tag tag;                                                                            /*!< represents an NFC tag that has been discovered */
     private IsoDep tagcomm;                                                                     /*!< provides access to ISO-DEP (ISO 14443-4) properties and I/O operations on a Tag */
-    //    private String[][] nfctechfilter = new String[][]{new String[]{NfcA.class.getName()}};      /*!<  NFC tech lists */
+    private String[][] nfctechfilter = new String[][]{new String[]{NfcA.class.getName()}};      /*!<  NFC tech lists */
     private PendingIntent nfcintent;                                                            /*!< reference to a token maintained by the system describing the original data used to retrieve it */
     private TextView cardType;                                                                  /*!< TextView representing type of card */
     private TextView progress;                                                                  /*!< TextView representing percentage of read data */
@@ -65,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
     private ServerResponse mServerResponse;
     private RelativeLayout info;
     private RelativeLayout card;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
          */
         super.onResume();
         //nfcAdapter.enableReaderMode(this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,null);
-//        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);//filter
-        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, null);
+        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);//filter
 
     }
 
@@ -121,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
         /*!
             This is called when NFC tag is detected
          */
-        Log.d("onNewIntent", "New Intent!");
         super.onNewIntent(intent);
         tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         new CardReader().execute(tag);
@@ -213,26 +214,21 @@ public class MainActivity extends AppCompatActivity {
                 OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
                 byte[] recv = transceive("00 A4 04 00 0E 32 50 41 59 2E 53 59 53 2E 44 44 46 30 31 00");
 
-                String card = "";
-                for (int i = 0; i < recv.length; i++) {
-                    card += " " + recv[i];
-                }
-                String finHex = Byte2Hex(recv);
-                String finString = new String(Arrays.copyOfRange(recv, 0, recv.length - 1));
-
-
                 myOutWriter.append(Byte2Hex(recv) + "\n");
                 temp = "00 A4 04 00 07";
                 temp += Byte2Hex(recv).substring(80, 102);
                 temp += "00";
+
                 if (temp.matches("00 A4 04 00 07 A0 00 00 00 04 10 10 00"))
                     cardtype = "MasterCard";
-                if (temp.matches("00 A4 04 00 07 A0 00 00 00 03 20 10 00"))
+                else if (temp.matches("00 A4 04 00 07 A0 00 00 00 03 20 10 00"))
                     cardtype = "Visa Electron";
-                if (temp.matches("00 A4 04 00 07 A0 00 00 00 03 10 10 00"))
+                else if (temp.matches("00 A4 04 00 07 A0 00 00 00 03 10 10 00"))
                     cardtype = "Visa";
-                if (temp.matches("00 A4 04 00 07 A0 00 00 00 25 01 04 00"))
+                else if (temp.matches("00 A4 04 00 07 A0 00 00 00 25 01 04 00"))
                     cardtype = "American Express";
+                else
+                    return;
 
                 recv = transceive(temp);
                 myOutWriter.append(Byte2Hex(recv) + "\n");
@@ -257,12 +253,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 } else if (cardtype == "Visa" || cardtype == "Visa Electron") {
-                    cardnumber = Byte2Hex(recv).substring(12, 36).replaceAll(" ", "");
+                    cardnumber = Byte2Hex(recv).substring(31, 38).replaceAll(" ", "");
                     cardexpiration = Byte2Hex(recv).substring(40, 43).replaceAll(" ", "") + "/" + Byte2Hex(recv).substring(37, 40).replaceAll(" ", "");
                 } else if (cardtype == "American Express") {
-                    cardnumber = "Unknown";
+                    cardnumber = Byte2Hex(recv).substring(92, 115).replaceAll(" ", "");
                     cardexpiration = new String(Arrays.copyOfRange(recv, 7, 9)) + "/" + new String(Arrays.copyOfRange(recv, 5, 7));
-
                 }
 
                 myOutWriter.close();
