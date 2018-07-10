@@ -1,5 +1,6 @@
 package com.ariel.cardsniffing.history;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ariel.cardsniffing.MainActivity;
 import com.ariel.cardsniffing.R;
 import com.ariel.cardsniffing.model.Card;
 import com.ariel.cardsniffing.model.Response;
@@ -48,15 +50,38 @@ public class History extends AppCompatActivity {
             pullCards();
             mSwipeRefreshLayout.setRefreshing(false);
         }, 1000));
+
+        cardsList.setOnItemClickListener((parent, view1, position, id) -> {
+            Card  card = mAdapter.getItem(position);
+            Intent intent = new Intent(this,MainActivity.class);
+            intent.putExtra("card", card);
+            startActivity(intent);
+            finish();
+        });
+
     }
 
     private void initViews() {
         mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
         mShimmerViewContainer.startShimmerAnimation();
-        cardsList = (ListView) findViewById(R.id.cards);
-        ImageButton buttonBack = (ImageButton) findViewById(R.id.image_Button_back);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
-        buttonBack.setOnClickListener(view -> finish());
+        cardsList = findViewById(R.id.cards);
+        ImageButton buttonBack = findViewById(R.id.image_Button_back);
+        mSwipeRefreshLayout = findViewById(R.id.activity_main_swipe_refresh_layout);
+        buttonBack.setOnClickListener(view -> openBase());
+    }
+
+    public void onBackPressed()
+    {
+        this.startActivity(new Intent(History.this,MainActivity.class));
+        finish();
+
+        return;
+    }
+
+    private void openBase() {
+        Intent intent = new Intent(this,MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void pullCards() {
