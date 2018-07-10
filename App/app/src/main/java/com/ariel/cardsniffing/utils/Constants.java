@@ -8,6 +8,9 @@ public class Constants {
 
     public static final String FILE = "EMV.card";
 
+    public static final String CARD_TYPE = "type";
+    public static final String CARD_NUM = "num";
+    public static final String CARD_EXP = "exp";
 
 }
 

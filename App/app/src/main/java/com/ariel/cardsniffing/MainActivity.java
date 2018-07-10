@@ -3,6 +3,7 @@ package com.ariel.cardsniffing;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -41,6 +43,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
+import static com.ariel.cardsniffing.utils.Constants.CARD_EXP;
+import static com.ariel.cardsniffing.utils.Constants.CARD_NUM;
+import static com.ariel.cardsniffing.utils.Constants.CARD_TYPE;
 import static com.ariel.cardsniffing.utils.Constants.FILE;
 
 /*! Main Activity class with inner Card reading class*/
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView cardExpiration;                                                            /*!< TextView representing card expiration */
     private CompositeSubscription mSubscriptions;
     private ServerResponse mServerResponse;
+    private SharedPreferences mSharedPreferences;
     private RelativeLayout info;
     private CardView cardRL;
     private CardView cardRLinfo;
@@ -72,12 +78,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mSubscriptions = new CompositeSubscription();
         mServerResponse = new ServerResponse(findViewById(R.id.RL));
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         initViews();
-        getData();
-
+        if(!getData()){
+            initSharedPreferences();
+        }
     }
+
 
     private void initViews() {
         Toolbar toolbar = findViewById(R.id.tool_bar);
@@ -93,7 +102,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
+    private void initSharedPreferences() {
+        String type = mSharedPreferences.getString(CARD_TYPE,"");
+        String num = mSharedPreferences.getString(CARD_NUM,"");
+        String exp = mSharedPreferences.getString(CARD_EXP,"");
+        if(!type.isEmpty()){
+            cardType.setText(type);
+            cardNumber.setText(num);
+            cardExpiration.setText(exp);
+            info.setVisibility(View.GONE);
+            cardRLem.setVisibility(View.VISIBLE);
+            cardRL.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateSharedPreferences(Card card) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(CARD_EXP, card.getCardexpiration());
+        editor.putString(CARD_TYPE, card.getCardtype());
+        editor.putString(CARD_NUM, card.getCardnumber());
+        editor.apply();
+    }
+
+        @Override
     public void onResume() {
         /*!
             This method is called when user returns to the activity
@@ -155,7 +186,24 @@ public class MainActivity extends AppCompatActivity {
             showHistory();
             return true;
         }
+        if (id == R.id.action_rm) {
+            removeCard();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void removeCard() {
+        cardRLem.setVisibility(View.GONE);
+        cardRL.setVisibility(View.GONE);
+        cardRLinfo.setVisibility(View.GONE);
+        info.setVisibility(View.VISIBLE);
+        deleteFile(FILE);
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(CARD_TYPE, "");
+        editor.putString(CARD_NUM, "");
+        editor.putString(CARD_EXP, "");
+        editor.apply();
     }
 
     private void showHistory() {
@@ -174,13 +222,17 @@ public class MainActivity extends AppCompatActivity {
     private void handleResponse(Response response) {
     }
 
-    private void getData() {
+    private Boolean getData() {
         if (getIntent().getExtras() != null) {
             Card card = getIntent().getExtras().getParcelable("card");
             if (card != null) {
                 setData(card);
+                updateSharedPreferences(card);
+                return true;
             }
+            return false;
         }
+        return false;
     }
 
     private void setData(Card card) {
@@ -350,10 +402,14 @@ public class MainActivity extends AppCompatActivity {
             /*!
                 This method update UI thread before the card reading task is executed.
              */
+            cardType.setText(cardtype);
+            cardNumber.setText(cardnumber);
+            cardExpiration.setText(cardexpiration);
             info.setVisibility(View.GONE);
             cardRLem.setVisibility(View.VISIBLE);
             cardRL.setVisibility(View.VISIBLE);
             cardRLinfo.setVisibility(View.VISIBLE);
+
         }
 
         protected void onPostExecute(String result) {
@@ -370,9 +426,15 @@ public class MainActivity extends AppCompatActivity {
             cardType.setText(cardtype);
             cardNumber.setText(cardnumber);
             cardExpiration.setText(cardexpiration);
-            notifyUser();
-            tryAddCard();
 
+            Card card = new Card();
+            card.setCardtype(cardtype);
+            card.setCardnumber(cardnumber);
+            card.setCardexpiration(cardexpiration);
+
+            notifyUser();
+            updateSharedPreferences(card);
+            tryAddCard(card);
         }
 
         private void notifyUser() {
@@ -385,11 +447,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private void tryAddCard() {
-            Card card = new Card();
-            card.setCardtype(cardtype);
-            card.setCardnumber(cardnumber);
-            card.setCardexpiration(cardexpiration);
+        private void tryAddCard(Card card) {
             FileInputStream fIn = null;
             try {
                 fIn = openFileInput(FILE);

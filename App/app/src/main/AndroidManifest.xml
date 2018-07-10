@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.ariel.cardsniffing">
 
     <uses-permission android:name="android.permission.NFC" />
@@ -14,9 +15,10 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/nfc"
+        android:supportsRtl="false"
+        tools:replace="android:supportsRtl"
         android:label="@string/app_name"
         android:roundIcon="@drawable/nfc"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,8 +31,11 @@ public class MyHostApduService extends HostApduService {
          This method is called whenever a NFC reader sends an Application Protocol Data Unit (APDU) to our service
          and send back to NFC reader correct response.
          */
-        if (ppse == null)
-            getCardData();
+        if (ppse == null) {
+            if (!getCardData()) {
+                return null;
+            }
+        }
 
         if (apdu[0] == (byte) 0 && apdu[1] == (byte) 0xa4 && apdu[2] == (byte) 0x04 && apdu[3] == (byte) 0x00 && apdu[4] == (byte) 0x0E) {
             Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
@@ -57,7 +61,7 @@ public class MyHostApduService extends HostApduService {
         if (apdu[0] == (byte) 0x80 && apdu[1] == (byte) 0x2a && apdu[2] == (byte) 0x8e && apdu[3] == (byte) 0x80 && apdu[4] == (byte) 0x04) {
             Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
-            int i = Integer.parseInt(fromByte2Hex(apdu).replaceAll("\\s+","").substring(15, 18));
+            int i = Integer.parseInt(fromByte2Hex(apdu).replaceAll("\\s+", "").substring(15, 18));
             Log.i("Emulator", "Pozor: " + String.valueOf(i));
             return fromHex2Byte(crypto_checksum[i]);
         } else {
@@ -69,7 +73,7 @@ public class MyHostApduService extends HostApduService {
 
     }
 
-    public void getCardData() {
+    public boolean getCardData() {
         /*!
             This method reads all data from file saved in your device.
             Its called when the first apdu from reader is detected.
@@ -80,7 +84,8 @@ public class MyHostApduService extends HostApduService {
         try {
             fIn = openFileInput(FILE);
         } catch (FileNotFoundException e) {
-            Log.i("Emulator",  "Open file error: " + e.getMessage());
+            Log.i("Emulator", "Open file error: " + e.getMessage());
+            return false;
         }
         BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
         try {
@@ -102,6 +107,8 @@ public class MyHostApduService extends HostApduService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
+
     }
 
 
