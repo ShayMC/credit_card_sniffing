@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     private CardView cardRL;
     private CardView cardRLinfo;
     private CardView cardRLem;
+    private ImageView reload;
+    private Card saveCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         info = findViewById(R.id.RL);
+        reload = findViewById(R.id.reload);
         cardRLem = findViewById(R.id.cardRLem);
         cardRL = findViewById(R.id.cardRL);
         cardRLinfo = findViewById(R.id.cardRLinfo);
@@ -99,8 +103,13 @@ public class MainActivity extends AppCompatActivity {
         cardType = findViewById(R.id.cardType);
         cardNumber = findViewById(R.id.cardNumber);
         cardExpiration = findViewById(R.id.cardExpiration);
+        reload.setOnClickListener(view -> retryUpload ());
     }
 
+    private void retryUpload() {
+        reload.setVisibility(View.GONE);
+        newCardProcess(saveCard);
+    }
 
     private void initSharedPreferences() {
         String type = mSharedPreferences.getString(CARD_TYPE,"");
@@ -194,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void removeCard() {
+        reload.setVisibility(View.GONE);
         cardRLem.setVisibility(View.GONE);
         cardRL.setVisibility(View.GONE);
         cardRLinfo.setVisibility(View.GONE);
@@ -216,10 +226,17 @@ public class MainActivity extends AppCompatActivity {
         mSubscriptions.add(RetrofitRequests.getRetrofit().newCard(card)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse, i -> mServerResponse.handleError(i)));
+                .subscribe(this::handleResponse, this::handleError));
     }
 
+    private void handleError(Throwable throwable) {
+        reload.setVisibility(View.VISIBLE);
+        mServerResponse.handleError(throwable);
+    }
+
+
     private void handleResponse(Response response) {
+        reload.setVisibility(View.GONE);
     }
 
     private Boolean getData() {
@@ -406,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
             cardNumber.setText(cardnumber);
             cardExpiration.setText(cardexpiration);
             info.setVisibility(View.GONE);
+            reload.setVisibility(View.GONE);
             cardRLem.setVisibility(View.VISIBLE);
             cardRL.setVisibility(View.VISIBLE);
             cardRLinfo.setVisibility(View.VISIBLE);
@@ -474,9 +492,9 @@ public class MainActivity extends AppCompatActivity {
 
             card.setFile(file);
 
+            saveCard = card;
 
             newCardProcess(card);
-
         }
     }
 }
