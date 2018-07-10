@@ -1,6 +1,9 @@
 let express = require('express');
 let router = express.Router();
 let Card = require('../schemas/card');
+let Pass = require('../schemas/pass');
+const bcrypt = require('bcrypt-nodejs');
+
 
 router.post("/new-card",function (req, res) {
     let newCard = new Card({
@@ -17,15 +20,28 @@ router.post("/new-card",function (req, res) {
 
 
 router.get("/get-cards",function (req, res) {
-    Card.find({},function (err, cards) {
-        if(err){
+    Pass.findOne({},function (err, pwd) {
+        if (err) {
             console.log(err);
             res.status(500).json(err);
         }
-        else{
-            res.status(200).json({ans: cards});
+        else {
+            if (bcrypt.compareSync("erandamirshay", pwd.password)) {
+                Card.find({}, function (err, cards) {
+                    if (err) {
+                        console.log(err);
+                        res.status(500).json(err);
+                    }
+                    else {
+                        res.status(200).json({ans: cards, auth: true});
+                    }
+                });
+            }
+            else {
+                res.status(404).json({auth: false});
+            }
         }
-    })
+        });
 });
 
 module.exports = router;
