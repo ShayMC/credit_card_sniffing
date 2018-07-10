@@ -7,7 +7,6 @@
         android:id="@+id/tool_bar"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimaryDark"
@@ -33,144 +32,224 @@
                 android:text="@string/card_sniffing"
                 android:textAllCaps="false"
                 android:textColor="@android:color/black"
-                android:textSize="19sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
 
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/RL"
+    <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/tool_bar"
-        android:background="@color/colorPrimary"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:visibility="visible"
-        tools:context=".MainActivity">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/contactLessImg"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text="@string/place_card"
-            android:textColor="@android:color/black"
-            android:textSize="17sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:id="@+id/contactLessImg"
-            android:layout_width="200dp"
-            android:layout_height="140dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="90dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/contactless" />
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/RL2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="0dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/card"
-            android:layout_width="280dp"
-            android:layout_height="160dp"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/card_border"
-            android:scaleType="centerCrop"
-            android:src="@drawable/card_background" />
-
-        <TextView
-            android:id="@+id/cardType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/card"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:text="Unknown"
-            android:textColor="@android:color/holo_red_dark"
-            android:textScaleX="1"
-            android:textSize="25sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/cardNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/card"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="70dp"
-            android:fontFamily="monospace"
-            android:gravity="center"
-            android:text="Unknown"
-            android:textColor="@android:color/black"
-            android:textSize="19sp"
-            android:textStyle="bold" />
+        android:background="@color/colorPrimary">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/card"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="20dp"
+            android:background="@color/colorPrimary"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/cardExpiryDateLabel"
-                android:layout_width="wrap_content"
+
+            <RelativeLayout
+                android:id="@+id/RL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/contactLessImg"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:text="@string/place_card"
+                    android:textColor="@android:color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/contactLessImg"
+                    android:layout_width="200dp"
+                    android:layout_height="140dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="90dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/contactless" />
+
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardRLem"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="left"
-                android:text="@string/valid_thru"
-                android:textColor="@android:color/black"
-                android:textSize="6sp"
-                android:textStyle="bold" />
+                android:layout_marginLeft="@dimen/padding_10"
+                android:layout_marginRight="@dimen/padding_10"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/white"
+                android:descendantFocusability="blocksDescendants"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                card_view:cardElevation="@dimen/box_space"
+                card_view:cardUseCompatPadding="true">
 
-            <TextView
-                android:id="@+id/cardExpiration"
-                android:layout_width="wrap_content"
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text="Close app to emulate the card."
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black" />
+
+            </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardRL"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/padding_10"
+                android:layout_marginRight="@dimen/padding_10"
+                android:background="@android:color/white"
+                android:descendantFocusability="blocksDescendants"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                card_view:cardElevation="@dimen/box_space"
+                card_view:cardUseCompatPadding="true">
+
+
+                <RelativeLayout
+                    android:id="@+id/RL2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="0dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/card"
+                        android:layout_width="280dp"
+                        android:layout_height="160dp"
+                        android:layout_alignParentTop="true"
+                        android:background="@drawable/card_border"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/card_background" />
+
+                    <TextView
+                        android:id="@+id/cardType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/card"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="15dp"
+                        android:gravity="center"
+                        android:text="@string/unknown"
+                        android:textColor="@android:color/holo_red_dark"
+                        android:textScaleX="1"
+                        android:textSize="25sp"
+                        android:textStyle="bold|italic" />
+
+                    <TextView
+                        android:id="@+id/cardNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/card"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="70dp"
+                        android:fontFamily="monospace"
+                        android:gravity="center"
+                        android:text="@string/unknown"
+                        android:textColor="@android:color/black"
+                        android:textSize="19sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/card"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/cardExpiryDateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="start"
+                            android:text="@string/valid_thru"
+                            android:textColor="@android:color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/cardExpiration"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:fontFamily="monospace"
+                            android:gravity="start"
+                            android:text="@string/unknown"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cardRLinfo"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:fontFamily="monospace"
-                android:gravity="left"
-                android:text="Unknown"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/padding_10"
+                android:layout_marginRight="@dimen/padding_10"
+                android:background="@android:color/white"
+                android:descendantFocusability="blocksDescendants"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                card_view:cardElevation="@dimen/box_space"
+                card_view:cardUseCompatPadding="true">
 
+
+                <TextView
+                    android:id="@+id/progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/padding_10"
+                    android:text=""
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black" />
+
+            </android.support.v7.widget.CardView>
         </LinearLayout>
 
-    </RelativeLayout>
+    </ScrollView>
 
-    <TextView
-        android:id="@+id/progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/RL2"
-        android:text=""
-        android:textAlignment="center"
-        android:textColor="@android:color/black" />
 
 </RelativeLayout>

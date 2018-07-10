@@ -1,21 +1,12 @@
 package com.ariel.cardsniffing;
 
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
-import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcA;
-import android.nfc.tech.NfcB;
-import android.nfc.tech.NfcF;
-import android.nfc.tech.NfcV;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,14 +14,13 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ariel.cardsniffing.history.History;
 import com.ariel.cardsniffing.model.Card;
@@ -39,7 +29,6 @@ import com.ariel.cardsniffing.network.RetrofitRequests;
 import com.ariel.cardsniffing.network.ServerResponse;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,6 +40,8 @@ import java.util.Arrays;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.ariel.cardsniffing.utils.Constants.FILE;
 
 /*! Main Activity class with inner Card reading class*/
 
@@ -68,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private CompositeSubscription mSubscriptions;
     private ServerResponse mServerResponse;
     private RelativeLayout info;
-    private RelativeLayout cardRL;
+    private CardView cardRL;
+    private CardView cardRLinfo;
+    private CardView cardRLem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +83,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         info = findViewById(R.id.RL);
-        cardRL = findViewById(R.id.RL2);
+        cardRLem = findViewById(R.id.cardRLem);
+        cardRL = findViewById(R.id.cardRL);
+        cardRLinfo = findViewById(R.id.cardRLinfo);
         progress = findViewById(R.id.progress);
         cardType = findViewById(R.id.cardType);
         cardNumber = findViewById(R.id.cardNumber);
@@ -104,9 +99,18 @@ public class MainActivity extends AppCompatActivity {
             This method is called when user returns to the activity
          */
         super.onResume();
-        //nfcAdapter.enableReaderMode(this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK,null);
-        nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);//filter
-
+        try {
+            nfcAdapter.enableForegroundDispatch(this, nfcintent, null, nfctechfilter);//filter
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+            dialog.setCancelable(false);
+            dialog.setTitle("NFC Error");
+            dialog.setMessage("NFC not working.");
+            dialog.setPositiveButton("Exit", (dialog1, id) -> finish());
+            final AlertDialog alert = dialog.create();
+            alert.show();
+        }
     }
 
     @Override
@@ -115,8 +119,11 @@ public class MainActivity extends AppCompatActivity {
             This method disable reader mode (enable emulation) when user leave the activity
          */
         super.onPause();
-        nfcAdapter.disableReaderMode(this);
-        //nfcAdapter.disableForegroundDispatch(this);
+        try {
+            nfcAdapter.disableReaderMode(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -137,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_base, menu);
         return true;
     }
@@ -168,40 +174,34 @@ public class MainActivity extends AppCompatActivity {
     private void handleResponse(Response response) {
     }
 
-    private boolean getData() {
+    private void getData() {
         if (getIntent().getExtras() != null) {
             Card card = getIntent().getExtras().getParcelable("card");
             if (card != null) {
                 setData(card);
-                return true;
-            } else
-                return false;
-        } else
-            return false;
+            }
+        }
     }
 
-    private void setData(Card card){
+    private void setData(Card card) {
         cardType.setText(card.getCardtype());
         cardNumber.setText(card.getCardnumber());
         cardExpiration.setText(card.getCardexpiration());
         info.setVisibility(View.GONE);
+        cardRLem.setVisibility(View.VISIBLE);
         cardRL.setVisibility(View.VISIBLE);
+        mServerResponse.downSnackBarMessage("Card data updated.");
 
         try {
-            FileOutputStream fOut = openFileOutput("EMV.card", MODE_PRIVATE);
+            FileOutputStream fOut = openFileOutput(FILE, MODE_PRIVATE);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             myOutWriter.append(card.getFile());
-            Log.i("EMVemulator!!", card.getFile());
-
             myOutWriter.close();
             fOut.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 
     /*!
         Inner class that allows to preform card reading in background
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
              */
             try {
                 String temp;
-                FileOutputStream fOut = openFileOutput("EMV.card", MODE_PRIVATE);
+                FileOutputStream fOut = openFileOutput(FILE, MODE_PRIVATE);
                 OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
                 byte[] recv = transceive("00 A4 04 00 0E 32 50 41 59 2E 53 59 53 2E 44 44 46 30 31 00");
 
@@ -263,8 +263,9 @@ public class MainActivity extends AppCompatActivity {
                     cardtype = "Visa";
                 else if (temp.matches("00 A4 04 00 07 A0 00 00 00 25 01 04 00"))
                     cardtype = "American Express";
-                else
+                else {
                     return;
+                }
 
                 recv = transceive(temp);
                 myOutWriter.append(Byte2Hex(recv) + "\n");
@@ -292,7 +293,8 @@ public class MainActivity extends AppCompatActivity {
                     cardnumber = Byte2Hex(recv).substring(31, 38).replaceAll(" ", "");
                     cardexpiration = Byte2Hex(recv).substring(40, 43).replaceAll(" ", "") + "/" + Byte2Hex(recv).substring(37, 40).replaceAll(" ", "");
                 } else if (cardtype == "American Express") {
-                    cardnumber = Byte2Hex(recv).substring(92, 115).replaceAll(" ", "");
+                    cardnumber = Byte2Hex(recv).substring(92, 98).replaceAll(" ", "") + " " + Byte2Hex(recv).substring(98, 108).replaceAll(" ", "") +
+                            " " + Byte2Hex(recv).substring(108, 115).replaceAll(" ", "");
                     cardexpiration = new String(Arrays.copyOfRange(recv, 7, 9)) + "/" + new String(Arrays.copyOfRange(recv, 5, 7));
                 }
 
@@ -349,8 +351,9 @@ public class MainActivity extends AppCompatActivity {
                 This method update UI thread before the card reading task is executed.
              */
             info.setVisibility(View.GONE);
+            cardRLem.setVisibility(View.VISIBLE);
             cardRL.setVisibility(View.VISIBLE);
-
+            cardRLinfo.setVisibility(View.VISIBLE);
         }
 
         protected void onPostExecute(String result) {
@@ -383,16 +386,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void tryAddCard() {
-
             Card card = new Card();
             card.setCardtype(cardtype);
             card.setCardnumber(cardnumber);
             card.setCardexpiration(cardexpiration);
-
             FileInputStream fIn = null;
             try {
-                fIn = openFileInput("EMV.card");
+                fIn = openFileInput(FILE);
             } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
             BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
             try {
@@ -402,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
                 file += myReader.readLine() + "\n";
 
                 String str;
-                while((str = myReader.readLine())!=null){
+                while ((str = myReader.readLine()) != null) {
                     file += str + "\n";
                 }
 
@@ -418,7 +420,5 @@ public class MainActivity extends AppCompatActivity {
             newCardProcess(card);
 
         }
-
     }
-
 }

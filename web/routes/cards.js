@@ -23,8 +23,6 @@ router.get("/get-cards",function (req, res) {
             res.status(500).json(err);
         }
         else{
-            console.log(cards);
-
             res.status(200).json({ans: cards});
         }
     })

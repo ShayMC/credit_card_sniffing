@@ -7,4 +7,5 @@
         android:orderInCategory="100"
         android:title="History"
         app:showAsAction="never" />
+
 </menu>

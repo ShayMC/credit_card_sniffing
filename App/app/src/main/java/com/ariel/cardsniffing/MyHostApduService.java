@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import static com.ariel.cardsniffing.utils.Constants.FILE;
+
 /*! Card emulation class */
 
 
@@ -32,34 +34,34 @@ public class MyHostApduService extends HostApduService {
             getCardData();
 
         if (apdu[0] == (byte) 0 && apdu[1] == (byte) 0xa4 && apdu[2] == (byte) 0x04 && apdu[3] == (byte) 0x00 && apdu[4] == (byte) 0x0E) {
-            Log.i("EMVemulator", "Received: " + fromByte2Hex(apdu));
+            Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
             return fromHex2Byte(ppse);
         }
         if (apdu[0] == (byte) 0 && apdu[1] == (byte) 0xa4 && apdu[2] == (byte) 0x04 && apdu[3] == (byte) 0x00 && apdu[4] == (byte) 0x07) {
-            Log.i("EMVemulator", "Received: " + fromByte2Hex(apdu));
+            Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
             return fromHex2Byte(card_application);
         }
         if (apdu[0] == (byte) 0x80 && apdu[1] == (byte) 0xa8 && apdu[2] == (byte) 0x00 && apdu[3] == (byte) 0x00 && apdu[4] == (byte) 0x02) {
-            Log.i("EMVemulator", "Received: " + fromByte2Hex(apdu));
+            Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
             return fromHex2Byte(processing_options);
         }
         if (apdu[0] == (byte) 0 && apdu[1] == (byte) 0xb2 && apdu[2] == (byte) 0x01 && apdu[3] == (byte) 0x0c && apdu[4] == (byte) 0x00) {
-            Log.i("EMVemulator", "Received: " + fromByte2Hex(apdu));
+            Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
             return fromHex2Byte(records);
         }
 
         if (apdu[0] == (byte) 0x80 && apdu[1] == (byte) 0x2a && apdu[2] == (byte) 0x8e && apdu[3] == (byte) 0x80 && apdu[4] == (byte) 0x04) {
-            Log.i("EMVemulator", "Received: " + fromByte2Hex(apdu));
+            Log.i("Emulator", "Received: " + fromByte2Hex(apdu));
 
             int i = Integer.parseInt(fromByte2Hex(apdu).replaceAll("\\s+","").substring(15, 18));
-            Log.i("EMVemulator", "Pozor: " + String.valueOf(i));
+            Log.i("Emulator", "Pozor: " + String.valueOf(i));
             return fromHex2Byte(crypto_checksum[i]);
         } else {
-            Log.i("EMVemulator", "else-Received: " + fromByte2Hex(apdu) + ";");
+            Log.i("Emulator", "else-Received: " + fromByte2Hex(apdu) + ";");
 
             return fromHex2Byte("6A 82");
         }
@@ -76,24 +78,24 @@ public class MyHostApduService extends HostApduService {
         crypto_checksum = new String[1000];
         FileInputStream fIn = null;
         try {
-            fIn = openFileInput("EMV.card");
+            fIn = openFileInput(FILE);
         } catch (FileNotFoundException e) {
-            Log.i("EMVemulator",  "Open file error: " + e.getMessage());
+            Log.i("Emulator",  "Open file error: " + e.getMessage());
         }
         BufferedReader myReader = new BufferedReader(new InputStreamReader(fIn));
         try {
             ppse = myReader.readLine();
-            Log.i("EMVemulator", "Read: " + ppse);
+            Log.i("Emulator", "Read: " + ppse);
             card_application = myReader.readLine();
-            Log.i("EMVemulator", "Read: " + card_application);
+            Log.i("Emulator", "Read: " + card_application);
             processing_options = myReader.readLine();
-            Log.i("EMVemulator", "Read: " + processing_options);
+            Log.i("Emulator", "Read: " + processing_options);
             records = myReader.readLine();
-            Log.i("EMVemulator", "Read: " + records);
+            Log.i("Emulator", "Read: " + records);
 
             for (int i = 0; i < 1000; i++) {
                 crypto_checksum[i] = myReader.readLine();
-                Log.i("EMVemulator", "Read: " + crypto_checksum[i]);
+                Log.i("Emulator", "Read: " + crypto_checksum[i]);
             }
             myReader.close();
             fIn.close();
@@ -134,6 +136,6 @@ public class MyHostApduService extends HostApduService {
             - The NFC link has been deactivated or lost
             - A different AID has been selected and was resolved to a different service component
          */
-        Log.i("EMVemulator", "Deactivated: " + reason);
+        Log.i("Emulator", "Deactivated: " + reason);
     }
 }

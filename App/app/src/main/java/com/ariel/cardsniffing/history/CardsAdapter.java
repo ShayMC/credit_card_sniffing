@@ -25,10 +25,6 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         cardsList = list;
     }
 
-    public List<Card> getCoursesList() {
-        return cardsList;
-    }
-
     @NonNull
     @Override
     public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
@@ -47,7 +43,6 @@ public class CardsAdapter extends ArrayAdapter<Card> {
         type.setText(currentCard.getCardtype());
         num.setText(currentCard.getCardnumber());
         exp.setText(currentCard.getCardexpiration());
-
 
         return listItem;
     }

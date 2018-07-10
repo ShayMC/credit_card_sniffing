@@ -4,10 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Card implements Parcelable {
-    String cardtype;            /*!< string with card type */
-    String cardnumber;          /*!< string with card number */
-    String cardexpiration;      /*!< string with card expiration*/
-    String file;
+    private String cardtype;            /*!< string with card type */
+    private String cardnumber;          /*!< string with card number */
+    private String cardexpiration;      /*!< string with card expiration*/
+    private String file;
 
     public Card(){}
 
