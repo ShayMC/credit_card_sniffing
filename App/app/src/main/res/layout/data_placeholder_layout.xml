@@ -6,11 +6,22 @@
     android:layout_marginLeft="10dp"
     android:layout_marginStart="10dp">
 
+    <View
+        android:id="@+id/thumbnail"
+        android:layout_width="@dimen/placeholderImage"
+        android:layout_height="@dimen/placeholderImage"
+        android:layout_marginRight="@dimen/activityPadding"
+        android:layout_marginTop="@dimen/padding_10"
+        android:background="@color/background"
+        android:layout_marginEnd="@dimen/activityPadding" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/thumbnail"
         android:layout_marginTop="@dimen/padding_10"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/thumbnail">
 
         <View
             android:layout_width="100dp"

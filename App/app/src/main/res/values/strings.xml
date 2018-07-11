@@ -7,6 +7,8 @@
     <string name="place_card">Place your card on a flat surface \n with the device on top. \n\n Reader mode active..</string>
     <string name="valid_thru">Valid Thru</string>
     <string name="card_sniffing">Card Sniffing</string>
+    <string name="history">History</string>
+    <string name="unknown">Unknown</string>
 
 
 </resources>

@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="History"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_rm"
+        android:orderInCategory="100"
+        android:title="Remove Current Card"
+        app:showAsAction="never" />
 </menu>

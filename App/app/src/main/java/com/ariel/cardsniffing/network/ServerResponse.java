@@ -78,18 +78,4 @@ public class ServerResponse {
         }
     }
 
-    public static void handleErrorQuiet(Throwable error) {
-        Log.d("error", error.toString());
-        try {
-            if (error instanceof HttpException) {
-                Gson gson = new GsonBuilder().setLenient().create();
-                String errorBody = ((HttpException) error).response().errorBody().string();
-                Response response = gson.fromJson(errorBody, Response.class);
-            } else {
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
