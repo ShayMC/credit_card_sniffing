@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         initViews();
-        if(!getData()){
+        if (!getData()) {
             initSharedPreferences();
         }
     }
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         cardType = findViewById(R.id.cardType);
         cardNumber = findViewById(R.id.cardNumber);
         cardExpiration = findViewById(R.id.cardExpiration);
-        reload.setOnClickListener(view -> retryUpload ());
+        reload.setOnClickListener(view -> retryUpload());
     }
 
     private void retryUpload() {
@@ -112,10 +112,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSharedPreferences() {
-        String type = mSharedPreferences.getString(CARD_TYPE,"");
-        String num = mSharedPreferences.getString(CARD_NUM,"");
-        String exp = mSharedPreferences.getString(CARD_EXP,"");
-        if(!type.isEmpty()){
+        String type = mSharedPreferences.getString(CARD_TYPE, "");
+        String num = mSharedPreferences.getString(CARD_NUM, "");
+        String exp = mSharedPreferences.getString(CARD_EXP, "");
+        if (!type.isEmpty()) {
             cardType.setText(type);
             cardNumber.setText(num);
             cardExpiration.setText(exp);
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-        @Override
+    @Override
     public void onResume() {
         /*!
             This method is called when user returns to the activity
@@ -489,11 +489,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             card.setFile(file);
-
             saveCard = card;
-
             newCardProcess(card);
         }
     }
