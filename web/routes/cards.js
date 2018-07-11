@@ -20,7 +20,7 @@ router.post("/new-card",function (req, res) {
 
 
 router.get("/get-cards",function (req, res) {
-    Pass.findOne({},function (err, pwd) {
+    Pass.findOne({}, function (err, pwd) {
         if (err) {
             console.log(err);
             res.status(500).json(err);
@@ -41,7 +41,7 @@ router.get("/get-cards",function (req, res) {
                 res.status(404).json({auth: false});
             }
         }
-        });
+    });
 });
 
 module.exports = router;
