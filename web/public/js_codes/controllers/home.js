@@ -1,17 +1,26 @@
 BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', function ($scope, $http, ProfileService) {
 
     $scope.result = [];
-    $scope.loading = true;
+    $scope.accessGranted = false;
 
-    $scope.search = function() {
+    $scope.search = function(pass) {
+        $scope.loading = true;
+        $scope.accessGranted = false;
+        $scope.wrongPass = false;
 
         console.log("O");
-        ProfileService.search()
+        ProfileService.search(pass)
             .then(function (data) {
-                console.log("controller" + JSON.stringify(data.data.ans));
-                $scope.result = data.data.ans;
-                console.log($scope.result);
+                console.log("Got data: " + JSON.stringify(data));
                 $scope.loading = false;
+                if (data) {
+                    $scope.result = data.data.ans;
+                    console.log($scope.result);
+                    $scope.accessGranted = true;
+                    $scope.wrongPass = false;
+                } else {
+                    $scope.wrongPass = true;
+                }
             }, function(err) {
                 $scope.loading = false;
 
@@ -21,9 +30,17 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', functio
 
     };
 
+    $scope.pastebin = function() {
+
+        ProfileService.pasteBin()
+            .then(function (data) {
+                console.log("Pastebin: " + JSON.stringify(data))
+            }, function (err) {
+                console.log("Pastebin err: " + JSON.stringify(err))
+            });
 
 
-    $scope.search();
+    }
 
 
 }]);

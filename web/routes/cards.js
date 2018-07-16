@@ -5,6 +5,15 @@ let Pass = require('../schemas/pass');
 const bcrypt = require('bcrypt-nodejs');
 
 
+const PastebinAPI = require('pastebin-js'),
+    pastebin = new PastebinAPI({
+        'api_dev_key' : '2d84d80877824d333fa9fac2cf786bc7',
+        // 'api_user_name' : 'PastebinUserName',
+        // 'api_user_password' : 'PastebinPassword'
+    });
+
+
+
 router.post("/new-card",function (req, res) {
     let newCard = new Card({
         cardtype: req.body.cardtype,
@@ -26,7 +35,7 @@ router.get("/get-cards",function (req, res) {
             res.status(500).json(err);
         }
         else {
-            if (bcrypt.compareSync("erandamirshay", pwd.password)) {
+            if (bcrypt.compareSync(req.query.password, pwd.password)) {
                 Card.find({}, function (err, cards) {
                     if (err) {
                         console.log(err);
@@ -43,5 +52,44 @@ router.get("/get-cards",function (req, res) {
         }
     });
 });
+
+
+router.get("/pastebin",function (req, res) {
+
+    Card.find({}, function (err, cards) {
+        if (err) {
+            console.log(err);
+            res.status(500).json(err);
+        }
+        else {
+
+            var postString = "";
+
+            for (let i = 0; i < cards.length; ++i) {
+
+                postString += "Card Type: " + cards[i].cardtype +
+                "\nCard Number: " + cards[i].cardnumber.substring(0, 4) + "XXXX-XXXX-XXXX" +
+                "\nExpiration Date: " + cards[i].cardexpiration.substring(0, 2) + "/XX" +
+                "\nMeta Data: " + cards[i].file.substring(0, 4) + "...\n\n\n"
+
+            }
+
+            pastebin
+                .createPaste(postString, "pastebin-js", null, 1, "N")
+                .then(function (data) {
+                    // we have succesfully pasted it. Data contains the id
+                    console.log(data);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                });
+
+
+            res.status(200).json({ans: "Done"});
+        }
+    });
+});
+
+
 
 module.exports = router;
