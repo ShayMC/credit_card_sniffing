@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /*!
-            This method is where activity is initialized
+            This method is where activity is initialized (13.56)
          */
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
         private void readCard() {
             /*!
                 This method reads all data from card to perform successful Mag-Stripe
-                transaction and saves them to file(APDU).
+                transaction and saves them to file(APDU).(Application Protocol Data Unit Command)
              */
             try {
                 String temp;
@@ -404,6 +404,8 @@ public class MainActivity extends AppCompatActivity {
         protected String toMagStripeMode() {
             /*
                 This method just returns card response with only Mag-Stripe mode support
+                Stripe mode it issues Read Record commands to retrieve the data from
+                the card which will cause the card to generate Dynamic CVC
              */
             return "770A820200009404080101009000";
         }
