@@ -1,4 +1,4 @@
-BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', function ($scope, $http, ProfileService) {
+BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', '$window', function ($scope, $http, ProfileService, $window) {
 
     $scope.result = [];
     $scope.accessGranted = false;
@@ -35,11 +35,13 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', functio
         ProfileService.pasteBin()
             .then(function (data) {
                 console.log("Pastebin: " + JSON.stringify(data))
+
+                if (data.data.url) {
+                        $window.open(data.data.url, '_blank');
+                }
             }, function (err) {
                 console.log("Pastebin err: " + JSON.stringify(err))
             });
-
-
     }
 
 

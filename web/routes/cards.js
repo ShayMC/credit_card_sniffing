@@ -7,7 +7,8 @@ const bcrypt = require('bcrypt-nodejs');
 
 const PastebinAPI = require('pastebin-js'),
     pastebin = new PastebinAPI({
-        'api_dev_key' : '2d84d80877824d333fa9fac2cf786bc7',
+        'api_dev_key' : '574915369fcee4fab8ce4f3e70958fba', //(Eran)
+        // 'api_dev_key' : '2d84d80877824d333fa9fac2cf786bc7', //(Damir)
         // 'api_user_name' : 'PastebinUserName',
         // 'api_user_password' : 'PastebinPassword'
     });
@@ -77,15 +78,17 @@ router.get("/pastebin",function (req, res) {
             pastebin
                 .createPaste(postString, "pastebin-js", null, 1, "N")
                 .then(function (data) {
-                    // we have succesfully pasted it. Data contains the id
+
                     console.log(data);
+                    res.status(200).json({ans: "Done", url: data});
                 })
                 .fail(function (err) {
                     console.log(err);
+                    res.status(500).json({ans: "Error pastebinning"});
                 });
 
 
-            res.status(200).json({ans: "Done"});
+
         }
     });
 });
