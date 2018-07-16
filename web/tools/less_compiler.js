@@ -11,14 +11,12 @@ var lessCompiler = function () {
 
     files.forEach(function (file, index) {
         buffer += fs.readFileSync(path.join(__dirname, "../public/stylesheets/less/") + file);
-        console.log("Reading Less file to convert: " + path.join(__dirname, "../public/stylesheets/less/") + file);
     });
 
     fs.writeFile(path.join(__dirname, "../public/stylesheets/main.less"), buffer, function (err) {
         if (err) {
             return console.log("Error writing css! " + err);
         }
-        console.log("Successfully wrote main Less file!");
     });
 
 

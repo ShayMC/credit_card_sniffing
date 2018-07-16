@@ -1,17 +1,25 @@
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
+const readline = require('readline');
 var mongoose = require('mongoose');
 mongoose.Promise = require("bluebird");
 
 var cards = require('./routes/cards');
 
 
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+
+
 var app = express();
 
-// // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'ejs');
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -26,23 +34,41 @@ var myLessCompiler = require("./tools/less_compiler");
 myLessCompiler();
 
 
-var mongoDB = 'mongodb+srv://damir:damiri@cluster0-5kimc.mongodb.net/test?retryWrites=true';
-mongoose.connect(mongoDB, {
-        // useMongoClient: true
-    }
-);
+var mongoUser;
+var mongoPassword;
+rl.question("Enter MongoDB user and password.\nUser:", function (answer) {
+    mongoUser = answer;
 
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error!\n'));
+    rl.question("Password:", function (answer) {
+        mongoPassword = answer;
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname + "/index.html"));
+
+        var mongoDB = 'mongodb+srv://' + mongoUser + ':' + mongoPassword + '@cluster0-5kimc.mongodb.net/test?retryWrites=true';
+        mongoose.connect(mongoDB, {
+                // useMongoClient: true
+            }
+        );
+
+        var db = mongoose.connection;
+        db.on('error', console.error.bind(console, 'MongoDB connection error!\n'));
+        db.once('open', function (callback) {
+            console.log("Connected successfully to MongoDB");
+        });
+        app.get('/', function (req, res) {
+            res.sendFile(path.join(__dirname + "/index.html"));
+        });
+
+
+        app.listen(3000, function () {
+            console.log("listening on 3000");
+        });
+    });
 });
 
 
-app.listen(3000, function () {
-    console.log("listening on 3000");
-});
+
+
+
 
 //
 // let Pass = require('./schemas/pass');
@@ -55,68 +81,5 @@ app.listen(3000, function () {
 //        psw.save();
 //     })
 // });
-
-
-
-
-
-
-// var http = require('http');
-// var qs = require('qs');
-//
-// var query = qs.stringify({
-//     api_option: 'paste',
-//     api_dev_key: '2d84d80877824d333fa9fac2cf786bc7',
-//     api_paste_code: 'Awesome paste content',
-//     api_paste_name: 'Awesome paste name',
-//     api_paste_private: 1,
-//     api_paste_expire_date: '1D'
-// });
-//
-// var req = http.request({
-//     host: 'pastebin.com',
-//     port: 80,
-//     path: '/api/api_post.php',
-//     method: 'GET',
-//     headers: {
-//         // 'Content-Type': 'multipart/form-data',
-//         'Content-Type': 'application/x-www-form-urlencoded',
-//         'Content-Length': query.length
-//     }
-// }, function(res) {
-//     var data = '';
-//     res.on('data', function(chunk) {
-//         data += chunk;
-//     });
-//     res.on('end', function() {
-//         console.log(data);
-//     });
-// });
-//
-// req.write(query);
-// req.end();
-
-
-// var PastebinAPI = require('pastebin-js'),
-//     pastebin = new PastebinAPI('devkey');
-//     // pastebin = new PastebinAPI('2d84d80877824d333fa9fac2cf786bc7');
-//
-// var PastebinAPI = require('pastebin-js'),
-//     pastebin = new PastebinAPI({
-//         'api_dev_key' : '2d84d80877824d333fa9fac2cf786bc7',
-//         'api_user_name' : 'PastebinUserName',
-//         'api_user_password' : 'PastebinPassword'
-//     });
-//
-// pastebin
-//     .createPasteFromFile("./uploadtest.txt", "pastebin-js test", null, 1, "N")
-//     .then(function (data) {
-//         // we have succesfully pasted it. Data contains the id
-//         console.log(data);
-//     })
-//     .fail(function (err) {
-//         console.log(err);
-//     });
-
 
 module.exports = app;
