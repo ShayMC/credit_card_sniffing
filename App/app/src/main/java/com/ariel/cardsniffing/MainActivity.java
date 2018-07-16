@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         mServerResponse = new ServerResponse(findViewById(R.id.RL));
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        nfcintent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);//the activity will not be launched if it is already running at the top of the history stack
         initViews();
         if (!getData()) {
             initSharedPreferences();
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
         private void readCard() {
             /*!
                 This method reads all data from card to perform successful Mag-Stripe
-                transaction and saves them to file.
+                transaction and saves them to file(APDU).
              */
             try {
                 String temp;

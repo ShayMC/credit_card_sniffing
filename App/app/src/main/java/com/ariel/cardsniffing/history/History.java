@@ -33,6 +33,7 @@ public class History extends AppCompatActivity {
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private CardsAdapter mAdapter;
     private ShimmerFrameLayout mShimmerViewContainer;
+    private String key = "erandamirshay";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +81,7 @@ public class History extends AppCompatActivity {
     }
 
     private void pullCards() {
-        mSubscriptions.add(RetrofitRequests.getRetrofit().getCards()
+        mSubscriptions.add(RetrofitRequests.getRetrofit().getCards(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleResponse, i -> mServerResponse.handleError(i)));

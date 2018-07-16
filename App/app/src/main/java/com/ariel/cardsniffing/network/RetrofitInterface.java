@@ -16,7 +16,7 @@ public interface RetrofitInterface {
     Observable<Response> newCard(@Body Card card);
 
     @GET("cards/get-cards")
-    Observable<Response> getCards();
+    Observable<Response> getCards(@Query("password") String password);
 
 
 }
