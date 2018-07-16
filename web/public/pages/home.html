@@ -4,6 +4,29 @@
 
 
 
+    <div class="container" ng-if="!accessGranted">
+        <div class="row">
+
+            <div class="col-4"></div>
+        <form class="form-inline col-4">
+            <label class="sr-only" for="inlineFormInputName2">Password:</label>
+            <input type="password" ng-model="passwd" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2" placeholder="Password">
+
+
+            <button type="submit" ng-click="search(passwd)" class="btn btn-primary mb-2">Submit</button>
+        </form>
+            <div class="col-4"></div>
+
+
+            <div class="col-4"></div>
+            <h1 class="text-danger" ng-if="wrongPass" style="text-align: center">Wrong password!</h1>
+            <div class="col-4"></div>
+
+
+        </div>
+    </div>
+
+
     <div class="col-5"></div>
     <div class="col-2">
 
@@ -19,7 +42,14 @@
     <div class="col-5"></div>
 
 
-    <div class="containter" ng-show="!loading">
+    <div class="containter" ng-show="!loading && accessGranted">
+
+        <div class="row">
+            <div class="col-4"></div>
+            <button type="button" class="col-4 btn btn-primary btn-lg" ng-click="pastebin()">Post on pastebin</button>
+            <div class="col-4"></div>
+        </div>
+
         <table class="table table-hover" ng-if="result.length > 0">
             <thead>
             <tr>
