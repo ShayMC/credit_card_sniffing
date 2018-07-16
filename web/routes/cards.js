@@ -63,23 +63,27 @@ router.get("/pastebin",function (req, res) {
         }
         else {
 
+            var postString = "";
+
             for (let i = 0; i < cards.length; ++i) {
 
-                pastebin
-                    .createPaste("Card Type: " + cards[i].cardtype +
-                        "\nCard Number: " + cards[i].cardnumber.substring(0, 4) + "XXXX-XXXX-XXXX" +
-                        "\nExpiration Date: " + cards[i].cardexpiration.substring(0, 2) + "/XX" +
-                        "\nMeta Data: " + cards[i].file.substring(0, 2) + "...", "pastebin-js", null, 1, "N")
-                    .then(function (data) {
-                        // we have succesfully pasted it. Data contains the id
-                        console.log(data);
-                    })
-                    .fail(function (err) {
-                        console.log(err);
-                    });
-
+                postString += "Card Type: " + cards[i].cardtype +
+                "\nCard Number: " + cards[i].cardnumber.substring(0, 4) + "XXXX-XXXX-XXXX" +
+                "\nExpiration Date: " + cards[i].cardexpiration.substring(0, 2) + "/XX" +
+                "\nMeta Data: " + cards[i].file.substring(0, 4) + "...\n\n\n"
 
             }
+
+            pastebin
+                .createPaste(postString, "pastebin-js", null, 1, "N")
+                .then(function (data) {
+                    // we have succesfully pasted it. Data contains the id
+                    console.log(data);
+                })
+                .fail(function (err) {
+                    console.log(err);
+                });
+
 
             res.status(200).json({ans: "Done"});
         }
