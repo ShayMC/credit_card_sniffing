@@ -37,7 +37,7 @@ var lessCompiler = function () {
     });
 };
 
-var wizeupMinify = function() {
+var myMinify = function() {
     var input = path.join(__dirname, "../public/stylesheets/css/main.css");
 
     minifier.on('error', function(err) {

@@ -85,8 +85,6 @@ router.get("/pastebin",function (req, res) {
                     res.status(500).json({ans: "Error pastebinning"});
                 });
 
-
-
         }
     });
 });

@@ -66,20 +66,4 @@ rl.question("Enter MongoDB user and password.\nUser:", function (answer) {
 });
 
 
-
-
-
-
-//
-// let Pass = require('./schemas/pass');
-// const bcrypt = require('bcrypt-nodejs');
-// bcrypt.genSalt(10, function (err, salt) {
-//     bcrypt.hash("erandamirshay", salt, null, function (err, hash) {
-//        let psw = new Pass({
-//            password : hash
-//         });
-//        psw.save();
-//     })
-// });
-
 module.exports = app;

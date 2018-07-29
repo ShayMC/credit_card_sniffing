@@ -8,7 +8,6 @@ cardSniffer.controller('homeController', ['$scope', '$http', 'RestService', '$wi
         $scope.accessGranted = false;
         $scope.wrongPass = false;
 
-        console.log("O");
         RestService.search(pass)
             .then(function (data) {
                 console.log("Got data: " + JSON.stringify(data));
@@ -26,7 +25,6 @@ cardSniffer.controller('homeController', ['$scope', '$http', 'RestService', '$wi
 
             });
 
-        console.log("K");
 
     };
 
