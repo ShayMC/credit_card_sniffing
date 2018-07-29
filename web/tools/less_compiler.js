@@ -1,7 +1,6 @@
 var less = require('less');
 var fs = require('fs');
 var path = require('path');
-// var minifier = require('minifier');
 
 var lessCompiler = function () {
 
@@ -29,7 +28,6 @@ var lessCompiler = function () {
         data = data.toString();
         less.render(buffer)
             .then(function(output) {
-                    // console.log(output.css);
                     fs.writeFileSync('./public/stylesheets/css/main.css', output.css);
                 },
                 function(err){
@@ -37,10 +35,6 @@ var lessCompiler = function () {
                 });
 
     });
-
-    // wizeupMinify();
-
-    // removers();
 };
 
 var wizeupMinify = function() {

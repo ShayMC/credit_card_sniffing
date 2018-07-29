@@ -1,4 +1,4 @@
-BDApp.service('ProfileService', function ($http) {
+cardSniffer.service('RestService', function ($http) {
 
     this.search = function (passwd) {
         return $http.get('/cards/get-cards?password=' + passwd)
@@ -11,7 +11,6 @@ BDApp.service('ProfileService', function ($http) {
                 return null;
             });
     };
-    // this.search();
 
     this.pasteBin = function() {
 
@@ -21,7 +20,7 @@ BDApp.service('ProfileService', function ($http) {
                 return data;
             })
             .catch(function () {
-                console.log("Caught error in getting cards");
+                console.log("Caught error in posting to pastebin");
                 return null;
             });
     }

@@ -1,4 +1,4 @@
-BDApp.filter('reverse', function() {
+cardSniffer.filter('reverse', function() {
     return function(items) {
         return items.slice().reverse();
     };

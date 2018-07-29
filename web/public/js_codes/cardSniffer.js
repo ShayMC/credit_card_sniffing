@@ -1,6 +1,6 @@
-var BDApp = angular.module('BDApp', ['ngRoute']);
+var cardSniffer = angular.module('cardSniffer', ['ngRoute']);
 
-BDApp.config(function ($routeProvider, $locationProvider) {
+cardSniffer.config(function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode({ enabled: true, requireBase: false }).hashPrefix('!');
 
     $routeProvider
@@ -18,7 +18,7 @@ BDApp.config(function ($routeProvider, $locationProvider) {
 
 
 
-BDApp.config(['$httpProvider', function ($httpProvider) {
+cardSniffer.config(['$httpProvider', function ($httpProvider) {
     //Reset headers to avoid OPTIONS request (aka preflight)
     $httpProvider.defaults.headers.common = {};
     $httpProvider.defaults.headers.post = {};

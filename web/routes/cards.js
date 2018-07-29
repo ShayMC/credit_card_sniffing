@@ -9,8 +9,6 @@ const PastebinAPI = require('pastebin-js'),
     pastebin = new PastebinAPI({
         'api_dev_key' : '574915369fcee4fab8ce4f3e70958fba', //(Eran)
         // 'api_dev_key' : '2d84d80877824d333fa9fac2cf786bc7', //(Damir)
-        // 'api_user_name' : 'PastebinUserName',
-        // 'api_user_password' : 'PastebinPassword'
     });
 
 

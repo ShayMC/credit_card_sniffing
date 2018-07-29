@@ -1,4 +1,4 @@
-BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', '$window', function ($scope, $http, ProfileService, $window) {
+cardSniffer.controller('homeController', ['$scope', '$http', 'RestService', '$window', function ($scope, $http, RestService, $window) {
 
     $scope.result = [];
     $scope.accessGranted = false;
@@ -9,7 +9,7 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', '$windo
         $scope.wrongPass = false;
 
         console.log("O");
-        ProfileService.search(pass)
+        RestService.search(pass)
             .then(function (data) {
                 console.log("Got data: " + JSON.stringify(data));
                 $scope.loading = false;
@@ -32,7 +32,7 @@ BDApp.controller('homeController', ['$scope', '$http', 'ProfileService', '$windo
 
     $scope.pastebin = function() {
 
-        ProfileService.pasteBin()
+        RestService.pasteBin()
             .then(function (data) {
                 console.log("Pastebin: " + JSON.stringify(data))
 

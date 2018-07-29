@@ -105,44 +105,10 @@
 body {
   background: rgba(255, 222, 143, 0.44);
 }
-.wizer-nav {
+.nfc-thief-nav {
   background-color: #009dff !important;
 }
-.wizer-nav .wizer-logo {
+.nfc-thief-nav .wizer-logo {
   color: white !important;
   margin-right: 3%;
-}
-.modal .modal-dialog.modal-width {
-  max-width: 55%;
-}
-.modal .modal-dialog .modal-content .modal-container {
-  width: 100%;
-  text-align: center;
-}
-.modal .modal-dialog .modal-content .modal-container .text {
-  text-align: left;
-}
-.modal .modal-dialog .modal-content .modal-container .google-btn {
-  color: #fff;
-  text-decoration: none;
-  font-size: 18px;
-  padding: 10px;
-  background: #ff5353;
-  display: block;
-  width: fit-content;
-  border-radius: 6%;
-  margin: 10px auto;
-  cursor: pointer;
-}
-.modal .modal-dialog .modal-content .modal-container .facebook-btn {
-  color: #fff;
-  text-decoration: none;
-  font-size: 18px;
-  padding: 10px;
-  background: #3018ff;
-  display: block;
-  width: fit-content;
-  border-radius: 6%;
-  margin: 10px auto;
-  cursor: pointer;
 }
